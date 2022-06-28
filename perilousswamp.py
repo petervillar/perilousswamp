@@ -74,6 +74,8 @@ def initializeMap():
     gubbe = (1,1)
     princess = (9,6)
 
+    swampMap[gubbe] = 'X'
+
     return swampMap, gubbe, princess
 
 def displayMap(swampMap):
