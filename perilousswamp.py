@@ -13,13 +13,6 @@ def clear():
         _ = system("clear")
 
 
-def slow_print(string):
-    for i in string:
-        sys.stdout.write(i)
-        sys.stdout.flush()
-        time.sleep(0.02)
-
-
 """
 main()
 getPlayerMove()
@@ -58,24 +51,45 @@ def displayMap():
     pass
 
 def getPlayerMove():
-    slow_print('''Which way now? - N, S, E, W, OR SE, NW
-    etc or "MAP"''')
+    print('''Which way now? - N, S, E, W, OR SE, NW
+    etc, "MAP" or "OUT"''')
     print('\n')
     playerMove = input(">>> ").upper().strip()
 
     return playerMove
 
+def initializeMap():
+    swampMap = [['#','#','#','#','#','#','#','#','#','#','#'],
+                ['#','.','.','.','.','.','.','.','.','.','#'],
+                ['#','.','.','.','.','.','.','.','.','.','#'],
+                ['#','.','.','.','.','.','.','.','.','.','#'],
+                ['#','.','.','.','.','.','.','.','.','.','#'],
+                ['#','.','.','.','.','.','.','.','.','.','#'],
+                ['#','.','.','.','.','.','.','.','.','.','#'],
+                ['#','.','.','.','.','.','.','.','.','.','#'],
+                ['#','.','.','.','.','.','.','.','.','.','#'],
+                ['#','.','.','.','.','.','.','.','.','.','#'],
+                ['#','#','#','#','#','#','#','#','#','#','#']]
+
+    return swampMap
+
+def displayMap(swampMap):
+    for row in swampMap:
+        print(*row, sep='')
+
 
 def main():
     """Runs a single game of Perilous Swamps"""
     displayCredits()
+    swampMap = initializeMap()
 
     while True:
-        displayMap()
+        displayMap(swampMap)
+        print('\n')
         playerMove = getPlayerMove()
 
         if playerMove == "OUT":
-            slow_print("So long... better luck next time!")
+            print("So long... better luck next time!")
             print("\n")
             sys.exit()
 
