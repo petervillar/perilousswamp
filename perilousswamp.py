@@ -71,7 +71,10 @@ def initializeMap():
                 ['#','.','.','.','.','.','.','.','.','.','#'],
                 ['#','#','#','#','#','#','#','#','#','#','#']]
 
-    return swampMap
+    gubbe = (1,1)
+    princess = (9,6)
+
+    return swampMap, gubbe, princess
 
 def displayMap(swampMap):
     for row in swampMap:
@@ -81,7 +84,10 @@ def displayMap(swampMap):
 def main():
     """Runs a single game of Perilous Swamps"""
     displayCredits()
-    swampMap = initializeMap()
+
+    gubbe=()
+    princess=()
+    swampMap, gubbe, princess = initializeMap()
 
     while True:
         displayMap(swampMap)
