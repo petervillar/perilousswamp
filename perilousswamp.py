@@ -67,13 +67,20 @@ def initializeMap():
         ["#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#"],
     ]
 
-    gubbe = [1, 3]
-    princess = (9, 6)
+    playerPosition = [1, 3]
+    princessPosition = (9, 6)
 
-    swampMap[gubbe[0]][gubbe[1]] = "X"
-    swampMap[princess[0]][princess[1]] = "*"
+    swampMap[playerPosition[0]][playerPosition[1]] = "X"
+    swampMap[princessPosition[0]][princessPosition[1]] = "*"
 
-    return swampMap, gubbe, princess
+    return swampMap, playerPosition, princessPosition
+
+def updateMap(swampMap, oldPlayerPosition, playerPosition, princessPosition):
+    swampMap[oldPlayerPosition[0]][oldPlayerPosition[1]] = " "
+    swampMap[playerPosition[0]][playerPosition[1]] = "X"
+    swampMap[princessPosition[0]][princessPosition[1]] = "*"
+
+    return swampMap
 
 
 def displayMap(swampMap):
@@ -85,14 +92,28 @@ def displayMap(swampMap):
     for row in swampMap:
         print(*row, sep="")
 
-def movePlayer(gubbe, playerMove, swampMap):
+def movePlayer(playerPosition, playerMove, swampMap):
+    oldPlayerPosition = playerPosition.copy()
+
     if playerMove == "N":
-        northOfGubbe = gubbe[0] - 1
-        thingNorthOfGubbe = swampMap[northOfGubbe][gubbe[1]]
-        if thingNorthOfGubbe != "#":
-            gubbe[0] = northOfGubbe
-        elif thingNorthOfGubbe == "#":
-            endGame()
+        playerPosition[0] = playerPosition[0] - 1
+    elif playerMove == "S":
+        playerPosition[0] = playerPosition[0] + 1
+    elif playerMove == "E":
+        playerPosition[1] = playerPosition[1] + 1
+    elif playerMove == "W":
+        playerPosition[1] = playerPosition[1] - 1
+
+    thingPlayerPosition = swampMap[playerPosition[0]][playerPosition[1]]
+    if thingPlayerPosition == "#":
+        endGame()
+    elif thingPlayerPosition == ".":
+        print("Too wet that way, clot.\n")
+        playerPosition = oldPlayerPosition
+
+
+    return playerPosition
+
 
 def endGame():
     print("You survived the swamp with % skill and % luck.")
@@ -112,9 +133,9 @@ def main():
     displayCredits()
     clear()
 
-    gubbe = ()
-    princess = ()
-    swampMap, gubbe, princess = initializeMap()
+    playerPosition = []
+    princessPosition = ()
+    swampMap, playerPosition, princessPosition = initializeMap()
 
     displayMap(swampMap)
     print()
@@ -132,7 +153,9 @@ def main():
             displayMap(swampMap)
 
         elif playerMove in ["N", "S", "E", "W", "NE", "NW", "SE", "SE"]:
-            movePlayer(gubbe, playerMove, swampMap)
+            oldPlayerPosition = playerPosition.copy()
+            playerPosition = movePlayer(playerPosition, playerMove, swampMap)
+            swampMap = updateMap(swampMap, oldPlayerPosition, playerPosition, princessPosition)
 
         else:
             continue
