@@ -5,6 +5,11 @@ import sys
 import time
 from os import system, name
 
+SWAMP = "·"
+EDGE = "#"
+YOU = "X"
+PRINCESS = "*"
+
 
 def clear():
     if name == "nt":
@@ -55,25 +60,26 @@ def getPlayerMove():
 def initializeMap():
     swampMap = [
         ["#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#"],
-        ["#", ".", ".", "X", " ", ".", ".", ".", ".", ".", "#"],
-        ["#", ".", ".", " ", ".", ".", ".", ".", ".", ".", "#"],
-        ["#", " ", ".", " ", ".", ".", ".", ".", ".", ".", "#"],
-        ["#", ".", ".", ".", ".", ".", ".", ".", " ", ".", "#"],
-        ["#", ".", ".", ".", ".", ".", ".", ".", ".", " ", "#"],
-        ["#", ".", ".", ".", ".", ".", ".", ".", ".", ".", "#"],
-        ["#", ".", ".", ".", ".", ".", ".", ".", " ", " ", "#"],
-        ["#", ".", ".", ".", ".", ".", ".", ".", " ", ".", "#"],
-        ["#", ".", ".", ".", ".", ".", "*", " ", " ", ".", "#"],
+        ["#", "·", " ", "X", " ", " ", " ", " ", " ", " ", "#"],
+        ["#", "·", "·", " ", "·", "·", "·", " ", " ", "·", "#"],
+        ["#", "·", "·", " ", "·", "·", "·", " ", " ", " ", "#"],
+        ["#", "·", " ", "·", "·", " ", "·", " ", " ", " ", "#"],
+        ["#", "·", "·", " ", " ", " ", " ", " ", "·", "·", "#"],
+        ["#", " ", "·", "·", "·", "·", "·", " ", "·", "·", "#"],
+        ["#", "·", "·", " ", "·", " ", "·", "·", " ", "·", "#"],
+        ["#", " ", " ", "·", " ", "·", " ", "·", "·", " ", "#"],
+        ["#", " ", "·", "·", " ", " ", " ", "·", " ", "·", "#"],
         ["#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#"],
     ]
 
     playerPosition = [1, 3]
-    princessPosition = (9, 6)
+    princessPosition = (6, 5)
 
-    swampMap[playerPosition[0]][playerPosition[1]] = "X"
-    swampMap[princessPosition[0]][princessPosition[1]] = "*"
+    swampMap[playerPosition[0]][playerPosition[1]] = YOU
+    swampMap[princessPosition[0]][princessPosition[1]] = PRINCESS
 
     return swampMap, playerPosition, princessPosition
+
 
 def updateMap(swampMap, oldPlayerPosition, playerPosition, princessPosition):
     swampMap[oldPlayerPosition[0]][oldPlayerPosition[1]] = " "
@@ -85,12 +91,13 @@ def updateMap(swampMap, oldPlayerPosition, playerPosition, princessPosition):
 
 def displayMap(swampMap):
     print(" N")
-    print("W+E\tX = You, * = Princess, . = swamp, # = edge")
-    print(" S \t. = swamp, # = edge")
+    print("W+E\tX = You, * = Princess, · = swamp, # = edge")
+    print(" S ")
     print()
 
     for row in swampMap:
         print(*row, sep="")
+
 
 def movePlayer(playerPosition, playerMove, swampMap):
     oldPlayerPosition = playerPosition.copy()
@@ -103,21 +110,34 @@ def movePlayer(playerPosition, playerMove, swampMap):
         playerPosition[1] = playerPosition[1] + 1
     elif playerMove == "W":
         playerPosition[1] = playerPosition[1] - 1
+    elif playerMove == "NE":
+        playerPosition[0] = playerPosition[0] - 1
+        playerPosition[1] = playerPosition[1] + 1
+    elif playerMove == "NW":
+        playerPosition[0] = playerPosition[0] - 1
+        playerPosition[1] = playerPosition[1] - 1
+    elif playerMove == "SE":
+        playerPosition[0] = playerPosition[0] + 1
+        playerPosition[1] = playerPosition[1] + 1
+    elif playerMove == "SW":
+        playerPosition[0] = playerPosition[0] + 1
+        playerPosition[1] = playerPosition[1] - 1
 
     thingPlayerPosition = swampMap[playerPosition[0]][playerPosition[1]]
-    if thingPlayerPosition == "#":
+    if thingPlayerPosition == EDGE:
         endGame()
-    elif thingPlayerPosition == ".":
+    elif thingPlayerPosition == SWAMP:
         print("Too wet that way, clot.\n")
         playerPosition = oldPlayerPosition
-
 
     return playerPosition
 
 
 def endGame():
     print("You survived the swamp with % skill and % luck.")
-    print("You ripped off a total of % treasure points off the poor overworked monsters.")
+    print(
+        "You ripped off a total of % treasure points off the poor overworked monsters."
+    )
     print("% of them died protecting their rightful treasure.")
     print("\nCongratulations!\n")
     print("Pity about the princess...")
@@ -152,10 +172,12 @@ def main():
             clear()
             displayMap(swampMap)
 
-        elif playerMove in ["N", "S", "E", "W", "NE", "NW", "SE", "SE"]:
+        elif playerMove in ["N", "S", "E", "W", "NE", "NW", "SE", "SW"]:
             oldPlayerPosition = playerPosition.copy()
             playerPosition = movePlayer(playerPosition, playerMove, swampMap)
-            swampMap = updateMap(swampMap, oldPlayerPosition, playerPosition, princessPosition)
+            swampMap = updateMap(
+                swampMap, oldPlayerPosition, playerPosition, princessPosition
+            )
 
         else:
             continue
