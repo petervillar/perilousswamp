@@ -93,8 +93,52 @@ class PerilousSwampBoard:
             self.playerPos = tmpPlayerPos.copy()
 
 
-class SwampEncounter:
+class SwampMonster:
+    def __init__(self):
+        self.monsterType = random.choice(
+            [
+                "Nothing",
+                "Werewolf",
+                "Bunyip",
+                "Phoenix",
+                "Troll",
+                "Goblin",
+                "Giant",
+                "Gorgon",
+                "Dragon",
+                "Ogre",
+                "Wizard",
+            ]
+        )
+        self.monsterDescription = random.choice(
+            [
+                "Fiendish",
+                "Green",
+                "Foul",
+                "Slimy",
+                "Tough",
+                "Horrible",
+                "Hungry",
+                "Nasty",
+                "Dirty",
+            ]
+        )
+        self.treasure = {
+            "10 silver spoons": 10,
+            "A jewelled sword": 30,
+            "A jar of rubies": 50,
+            "A treasure chest": 200,
+            "50 silver pieces": 50,
+            "100 gold pieces": 100,
+            "A box of jewels": 75,
+            "A fair princess": 1,
+        }
 
+    pass
+
+
+def SwampEncounter(swampMap, player):
+    monster = SwampMonster()
 
 
 def clearScreen():
