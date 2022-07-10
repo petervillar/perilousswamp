@@ -1,6 +1,7 @@
 """Perilous Swamps from Fantasy Games
 http://www.zx81stuff.org.uk/zx81/tape/FantasyGames"""
 
+import textwrap
 import sys
 import time
 import random
@@ -12,7 +13,7 @@ YOU = "X"
 PRINCE = "*"
 
 
-class Player:
+class SwampPlayer:
     def __init__(self):
         self.skill = 0
         self.combatStrength = random.randint(1500, 2000)
@@ -21,7 +22,7 @@ class Player:
         self.killedMonsters = 0
 
 
-class PerilousSwampBoard:
+class SwampBoard:
     def __init__(self):
         # TODO: randomize
         self.playerPos = [1, 3]
@@ -95,50 +96,86 @@ class PerilousSwampBoard:
 
 class SwampMonster:
     def __init__(self):
-        self.monsterType = random.choice(
+        self.type = random.choice(
             [
-                "Nothing",
-                "Werewolf",
-                "Bunyip",
-                "Phoenix",
-                "Troll",
-                "Goblin",
-                "Giant",
-                "Gorgon",
-                "Dragon",
-                "Ogre",
-                "Wizard",
+                "nothing",
+                "werewolf",
+                "bunyip",
+                "phoenix",
+                "troll",
+                "goblin",
+                "giant",
+                "gorgon",
+                "dragon",
+                "ogre",
+                "wizard",
             ]
         )
-        self.monsterDescription = random.choice(
+        self.description = random.choice(
             [
-                "Fiendish",
-                "Green",
-                "Foul",
-                "Slimy",
-                "Tough",
-                "Horrible",
-                "Hungry",
-                "Nasty",
-                "Dirty",
+                "fiendish",
+                "green",
+                "foul",
+                "slimy",
+                "tough",
+                "horrible",
+                "hungry",
+                "nasty",
+                "dirty",
             ]
         )
-        self.treasure = {
-            "10 silver spoons": 10,
-            "A jewelled sword": 30,
-            "A jar of rubies": 50,
-            "A treasure chest": 200,
-            "50 silver pieces": 50,
-            "100 gold pieces": 100,
-            "A box of jewels": 75,
-            "A fair princess": 1,
-        }
+        self.treasures = random.choice(
+            [
+                ["10 silver spoons", 10],
+                ["a jewelled sword", 30],
+                ["a jar of rubies", 50],
+                ["a treasure chest", 200],
+                ["50 silver pieces", 50],
+                ["100 gold pieces", 100],
+                ["a box of jewels", 75],
+                ["a fair princess", 1],
+            ]
+        )
 
-    pass
+        self.combatStrength = random.randint(20, 100)
 
 
-def SwampEncounter(swampMap, player):
-    monster = SwampMonster()
+def swampEncounter(player, monster):
+    """ Combat scenes are made up, couldn't bother looking at the BASIC source"""
+    print(f"Your combat strength is {player.combatStrength}")
+    print(f"A {monster.description} {monster.type} is guarding {monster.treasures[0]}")
+    print(f"Its combat points come to {monster.combatStrength}")
+
+    action = input("Do you wish to-\nFight, Run, or Bribe? ").upper()[0]
+
+    if action == "R":
+        time.sleep(0.4)
+        if random.randint(0, 100) < 60:
+            print("\nBut not fast enough...")
+            print("\nNow you can only fight.")
+            action = "F"
+        else:
+            print("\nYou sure run fast if you need to!\n")
+            return
+
+    if action == "B":
+        pass
+    elif action == "F":
+        combatPoints = int(input("How many combat points? "))
+        deadMsg = textwrap.dedent("""
+        Too bad... The monster ate you...
+        And took all your treasure...
+        Pity about the prince...
+        The wizard fed him to a dragon
+        The Queen is not all that pleased
+
+        Try again? You could get lucky
+        """)
+
+        print(deadMsg)
+        sys.exit()
+
+    return
 
 
 def clearScreen():
@@ -203,9 +240,8 @@ def getPlayerMove():
 
 def main():
     """Runs a single game of Perilous Swamps"""
-    player = Player()
-    swampMap = PerilousSwampBoard()
-    swampEncounter = SwampEncounter()
+    player = SwampPlayer()
+    swampMap = SwampBoard()
 
     clearScreen()
     displayCredits()
@@ -228,7 +264,8 @@ def main():
         elif playerMove in ["N", "S", "E", "W", "NE", "NW", "SE", "SW"]:
             swampMap.movePlayer(playerMove)
             swampMap.updateMap()
-            swampEncounter(swampMap, player)
+            monster = SwampMonster()
+            swampEncounter(player, monster)
 
         else:
             continue
