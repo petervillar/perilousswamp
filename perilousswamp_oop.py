@@ -13,15 +13,6 @@ YOU = "X"
 PRINCE = "*"
 
 
-class SwampPlayer:
-    def __init__(self):
-        self.skill = 0
-        self.combatStrength = random.randint(1500, 2000)
-        self.luck = 0
-        self.treasurePoints = 0
-        self.killedMonsters = 0
-
-
 class SwampBoard:
     def __init__(self):
         # TODO: randomize
@@ -59,7 +50,7 @@ class SwampBoard:
             print(*row, sep="")
         print()
 
-    def movePlayer(self, playerMove):
+    def movePlayer(self, player, playerMove):
         tmpPlayerPos = self.playerPos.copy()
 
         if playerMove == "N":
@@ -86,12 +77,21 @@ class SwampBoard:
         thingPlayerPos = self.swampMap[tmpPlayerPos[0]][tmpPlayerPos[1]]
 
         if thingPlayerPos == EDGE:
-            endGame()
+            endGame(player)
         elif thingPlayerPos == SWAMP:
             print("Too wet that way, clot.\n")
         else:
             self.oldPlayerPos = self.playerPos.copy()
             self.playerPos = tmpPlayerPos.copy()
+
+
+class SwampPlayer:
+    def __init__(self):
+        self.skill = 0
+        self.combatPoints = random.randint(1500, 2000)
+        self.luck = 0
+        self.treasurePoints = 0
+        self.killedMonsters = 0
 
 
 class SwampMonster:
@@ -133,47 +133,74 @@ class SwampMonster:
                 ["50 silver pieces", 50],
                 ["100 gold pieces", 100],
                 ["a box of jewels", 75],
-                ["a fair princess", 1],
+                ["a fair prince", 1000],
             ]
         )
 
-        self.combatStrength = random.randint(20, 100)
+        self.combatPoints = random.randint(20, 100)
 
 
 def swampEncounter(player, monster):
     """ Combat scenes are made up, couldn't bother looking at the BASIC source"""
-    print(f"Your combat strength is {player.combatStrength}")
+    print(f"Your combat points are {player.combatPoints}")
     print(f"A {monster.description} {monster.type} is guarding {monster.treasures[0]}")
-    print(f"Its combat points come to {monster.combatStrength}")
+    print(f"Its combat points come to {monster.combatPoints}")
 
     action = input("Do you wish to-\nFight, Run, or Bribe? ").upper()[0]
 
     if action == "R":
-        time.sleep(0.4)
+        time.sleep(1)
         if random.randint(0, 100) < 60:
             print("\nBut not fast enough...")
             print("\nNow you can only fight.")
             action = "F"
         else:
+            time.sleep(1)
             print("\nYou sure run fast if you need to!\n")
             return
 
     if action == "B":
         pass
     elif action == "F":
-        combatPoints = int(input("How many combat points? "))
-        deadMsg = textwrap.dedent("""
-        Too bad... The monster ate you...
-        And took all your treasure...
-        Pity about the prince...
-        The wizard fed him to a dragon
-        The Queen is not all that pleased
+        while True:
+            try:
+                combatPoints = int(input("How many combat points? "))
+                if combatPoints > player.combatPoints:
+                    print(f"But you only have {player.combatPoints} points\n")
+                else:
+                    break
+            except ValueError:
+                pass
 
-        Try again? You could get lucky
-        """)
+        # Combat begins
+        # TODO: add some randomness
 
-        print(deadMsg)
-        sys.exit()
+        if combatPoints >= monster.combatPoints:
+            time.sleep(1)
+            print("\nYou sure smashed that monster")
+            time.sleep(1)
+            print(f"Your illgotten gains now come to {monster.treasures[1]} points")
+            print()
+            time.sleep(1)
+            player.combatPoints = player.combatPoints - combatPoints
+            player.treasurePoints = player.treasurePoints + monster.treasures[1]
+            player.killedMonsters = player.killedMonsters + 1
+        else:
+            time.sleep(1)
+            print("Too bad... The monster ate you...")
+            time.sleep(1)
+            print("And took all your treasure...")
+            time.sleep(1)
+            print("Pity about the prince...")
+            time.sleep(1)
+            print("The wizard fed him to a dragon")
+            time.sleep(1)
+            print("The Queen is not all that pleased")
+            time.sleep(1)
+
+            print("Try again? You could get lucky")
+
+            sys.exit()
 
     return
 
@@ -211,18 +238,17 @@ def displayCredits():
     input("To start press the enter key...")
     print("\n")
 
-
-def endGame(p):
-    print("You survived the swamp with % skill and % luck.")
+def endGame(player):
+    print(f"You survived the swamp with {player.combatPoints} points left")
     print(
-        "You ripped off a total of % treasure points off the poor overworked monsters."
+        f"You ripped off a total of {player.treasurePoints} treasure points off the poor overworked monsters"
     )
-    print("% of them died protecting their rightful treasure.")
+    print(f"{player.killedMonsters} of them died protecting their rightful treasure")
     print("\nCongratulations!\n")
     print("Pity about the prince...")
-    print("The wizard fed her to a dragon.")
-    print("The king is not at all that pleased.")
-    print("\nTry again?... You could get lucky.")
+    print("The wizard fed him to a dragon.")
+    print("The queen is not at all that pleased.")
+    print("\nTry again?... You could get lucky")
 
     sys.exit()
 
@@ -262,7 +288,7 @@ def main():
             swampMap.displayMap()
 
         elif playerMove in ["N", "S", "E", "W", "NE", "NW", "SE", "SW"]:
-            swampMap.movePlayer(playerMove)
+            swampMap.movePlayer(player, playerMove)
             swampMap.updateMap()
             monster = SwampMonster()
             swampEncounter(player, monster)
